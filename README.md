@@ -9,3 +9,7 @@ How to compile and run the
   Client:
     Compile:	gcc SrDsn_DHCP_Client_Current.c -lm -o Client	
  	  Execute Command:	./Client <IP_Address> <PORT_NUM>
+
+  TDRS:
+    Compile:  gcc TDRS_SrDsn.c -lm -lpthread -o TDRS
+    Execute Command:	./TDRS <ServerIP> <ServerPortNum>	
