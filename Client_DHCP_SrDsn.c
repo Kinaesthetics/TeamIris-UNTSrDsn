@@ -8,9 +8,9 @@
  *  Team IRIS                                                                 *
  *   2016-Dec-15                                                              *
  *  SrDsn_DHCP_Client_Current.c                                               *
- *       																	                                    *
- *	Compile Command:	gcc SrDsn_DHCP_Client_Current.c -lm -o Client		        *
- *	Execute Command:	./Client <PORT_NUM>								                      *
+ *       																	  *
+ *	Compile Command:	gcc Client_DHCP_SrDsn.c -lm -o Client		          *
+ *	Execute Command:	./Client <IP_Address> <PORT_NUM>					  *
  *                                                                            *
  ******************************************************************************/
 
@@ -79,26 +79,37 @@ void setDHCP_Packet(DHCP_packet *temp,
 }
 
 void printPacket(DHCP_packet *tempDHCP_Packet){
-    printf("---------------------\n| OP|HTYPE|HLEN|HOPS|\n---------------------\n");
-    printf("| %02X | %02X | %02X | %0X |\n", tempDHCP_Packet->op, tempDHCP_Packet->hType, tempDHCP_Packet->hLen,tempDHCP_Packet->hOps);
-    printf("---------------------\n|        XID        |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->xID);
-    printf("---------------------\n|  SECS   |  FLAGS  |\n---------------------\n");
-    printf("|%08X |%08X |\n", tempDHCP_Packet->secs, tempDHCP_Packet->flags);
-    printf("---------------------\n|      CIADDR       |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->ciaddr);
-    printf("---------------------\n|      YIADDR       |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->yiaddr);
-    printf("---------------------\n|      SIADDR       |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->siaddr);
-    printf("---------------------\n|       GIADD       |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->giaddr);
-    printf("---------------------\n|       CHADDR      |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->chaddr);
-    printf("---------------------\n|    Magic Cookie   |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->magicCookie);
-    printf("---------------------\n|       Option      |\n---------------------\n");
-    printf("| %16X  |\n\n\n", tempDHCP_Packet->options);
+    printf("-------------------\t-------------------\n");
+	printf("OP|HTYPE|HLEN|HOPS");
+    printf("\t| %02X | %02X | %02X | %0X |", tempDHCP_Packet->op, tempDHCP_Packet->hType, tempDHCP_Packet->hLen,tempDHCP_Packet->hOps);
+	printf("\n-------------------\t-------------------\n");
+    printf("XID");
+	printf("\t\t\t| %16X |", tempDHCP_Packet->xID);
+	printf("\n-------------------\t-------------------\n");
+    printf("SECS|FLAGS");
+    printf("\t\t| %08X | %08X |", tempDHCP_Packet->secs, tempDHCP_Packet->flags);
+	printf("\n-------------------\t-------------------\n");
+    printf("CIADDR");
+    printf("\t\t\t| %16X |", tempDHCP_Packet->ciaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("YIADDR");
+    printf("\t\t\t| %16X |", tempDHCP_Packet->yiaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("SIADDR");
+    printf("\t\t\t| %16X |", tempDHCP_Packet->siaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("GIADDR");;
+    printf("\t\t\t| %16X |", tempDHCP_Packet->giaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("CHADDR");
+    printf("\t\t\t| %16X |", tempDHCP_Packet->chaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("Magic Cookie");
+    printf("\t\t| %16X |", tempDHCP_Packet->magicCookie);
+	printf("\n-------------------\t-------------------\n");
+    printf("Option");
+	printf("\t\t\t| %16X |", tempDHCP_Packet->options);
+	printf("\n-------------------\t-------------------\n");
 }
 
 void logIt(FILE *fp, char *string){
@@ -124,9 +135,9 @@ void logIt(FILE *fp, char *string){
 }
 
 int main(int argc, char *argv[]){
-  char* ipAddress =NULL;
+	char* ipAddress =NULL;
 	DHCP_packet dhcp, ack, offer, request, discovery;
-  DHCP_packet *dhcp_ptr = &dhcp;  //Pointer to DHCP packet
+	DHCP_packet *dhcp_ptr = &dhcp;  //Pointer to DHCP packet
 	DHCP_packet *ack_ptr = &ack;	//Pointer to ACK
 	DHCP_packet *offer_ptr = &offer;	//Pointer to Offer
 	DHCP_packet *request_ptr = &request; 	//Pointer to request
@@ -261,9 +272,9 @@ int main(int argc, char *argv[]){
 		);
 
 	//Send Discovery Packet
-  printf("Discovery Packet sent\n");
+	printf("\nDiscovery Packet sent.\n");
 	logIt(logFile, "Discovery Packet sent\n");
-  printPacket(discovery_ptr);
+//	printPacket(discovery_ptr);	//Commented out for testing
 	usleep(DELAY); //Add delay
 	if(send(sockfd, &discovery, sizeof(discovery), 0) < 0){
 		printf("!!ERROR!!!\n Cannot write to socket\n");
@@ -274,9 +285,9 @@ int main(int argc, char *argv[]){
 
     // wait for Offer
     recv_size = recv(sockfd, &offer, sizeof(offer), 0);
-    printf("Offer received\n");
-    printPacket(offer_ptr);
-	  logIt(logFile, "Offer received\n");
+    printf("\nOffer received:\n");
+	printPacket(offer_ptr);
+	logIt(logFile, "Offer received\n");
 	
 	
     // Build Request DHCP Packet
@@ -298,8 +309,8 @@ int main(int argc, char *argv[]){
 		);
   
 	//Send Request Packet
-	printf("Request Packet sent\n");
-  printPacket(request_ptr);
+	printf("\nRequest Packet sent.\n");
+//	printPacket(request_ptr); //Commented out for testing
 	logIt(logFile, "Request Packet sent\n");
 	usleep(DELAY); //Add delay
     if(send(sockfd, &request, sizeof(request), 0) < 0){
@@ -308,7 +319,7 @@ int main(int argc, char *argv[]){
 	}
 
     recv_size = recv(sockfd, &ack, sizeof(ack), 0);
-    printf("Ack Received\n");
+    printf("\nAck Received\n");
     printPacket(ack_ptr);
 	logIt(logFile, "Ack Received\n");
 

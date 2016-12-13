@@ -8,8 +8,8 @@
  *  Team IRIS                                                                 *
  *   2016-Dec-15                                                              *
  *  SrDsn_DHCP_Server_Current.c                                               *
- *  																		                                      *
- *	Compile Command:  gcc SrDsn_DHCP_Server_Current.c -lm -lpthread -o Server *
+ *  																		  *
+ *	Compile Command:  gcc Server_DHCP_SrDsn.c -lm -lpthread -o Server 		  *
  *	Execute Command:  ./Server                                                *
  *                                                                            *
  ******************************************************************************/
@@ -81,6 +81,7 @@ void *connectionHandler(void *arguments){
 			args->ID = i;
 	}
 	
+	
 	DHCP_packet dhcp, ack, offer, request, discovery;
 	DHCP_packet *dhcp_ptr = &dhcp;  //Pointer to DHCP packet
 	DHCP_packet *ack_ptr = &ack;	//Pointer to ACK
@@ -95,7 +96,7 @@ void *connectionHandler(void *arguments){
 	
 	// wait for Discovery
 	recv_size = recv(conn_fd, &discovery, sizeof(discovery), 0);
-	printf("Discovery received\n");
+	printf("\nDiscovery received:\n");
 	logIt(args->logFile, "Discovery Received\n", args->ID);
 	printPacket(discovery_ptr);
 	
@@ -122,9 +123,9 @@ void *connectionHandler(void *arguments){
 	buildOffer(offer_ptr);
 	
 	//Send Offer Packet
-    printf("Offer Packet sent\n");
+    printf("\nOffer Packet sent.\n");
 	logIt(args->logFile, "Offer Packet Sent\n", args->ID);
-	printPacket(offer_ptr);
+//	printPacket(offer_ptr); 	//Commented out for testing
 	usleep(DELAY); //Add delay
 	if(send(conn_fd, &offer, sizeof(offer), 0) < 0){
 		printf("!!ERROR!!! Cannot write to socket\n");
@@ -133,7 +134,7 @@ void *connectionHandler(void *arguments){
 
 	// wait for Request
 	recv_size = recv(conn_fd, &request, sizeof(request), 0);
-	printf("Requst Received\n");
+	printf("\nRequst Received:\n");
 	logIt(args->logFile, "Request Received\n", args->ID);
 	printPacket(request_ptr);
 	
@@ -141,9 +142,9 @@ void *connectionHandler(void *arguments){
 	buildACK(ack_ptr);
 	
 	//Send ACK Packet
-	printf("Ack Packet Sent\n");
+	printf("\nAck Packet Sent.\n");
 	logIt(args->logFile, "ACK Packet Sent\n", args->ID);
-	printPacket(ack_ptr);
+//	printPacket(ack_ptr);	//Commented out for testing
 	usleep(DELAY); //Add delay
 	if(send(conn_fd, &ack, sizeof(ack), 0) < 0){
 		printf("!!ERROR!!!\n Cannot write to socket\n");
@@ -161,25 +162,37 @@ void *connectionHandler(void *arguments){
 
 
 void printPacket(DHCP_packet *tempDHCP_Packet){
-    printf("---------------------\n| OP|HTYPE|HLEN|HOPS|\n---------------------\n");
-    printf("| %02X | %02X | %02X | %0X |\n", tempDHCP_Packet->op, tempDHCP_Packet->hType, tempDHCP_Packet->hLen,tempDHCP_Packet->hOps);
-    printf("---------------------\n|        XID        |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->xID);
-    printf("---------------------\n|  SECS   |  FLAGS  |\n---------------------\n");
-    printf("|%08X |%08X |\n", tempDHCP_Packet->secs, tempDHCP_Packet->flags);
-    printf("---------------------\n|      CIADDR       |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->ciaddr);
-    printf("---------------------\n|      YIADDR       |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->yiaddr);
-    printf("---------------------\n|      SIADDR       |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->giaddr);
-    printf("---------------------\n|       GIADD       |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->chaddr);
-    printf("---------------------\n|       CHADDR      |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->magicCookie);
-    printf("---------------------\n|    Magic Cookie   |\n---------------------\n");
-    printf("| %16X  |\n", tempDHCP_Packet->options);
-    printf("---------------------\n|       Option      |\n---------------------\n\n\n");
+    printf("-------------------\t-------------------\n");
+	printf("OP|HTYPE|HLEN|HOPS");
+    printf("\t| %02X | %02X | %02X | %0X |", tempDHCP_Packet->op, tempDHCP_Packet->hType, tempDHCP_Packet->hLen,tempDHCP_Packet->hOps);
+	printf("\n-------------------\t-------------------\n");
+    printf("XID");
+	printf("\t\t\t| %16X |", tempDHCP_Packet->xID);
+	printf("\n-------------------\t-------------------\n");
+    printf("SECS|FLAGS");
+    printf("\t\t| %08X | %08X |", tempDHCP_Packet->secs, tempDHCP_Packet->flags);
+	printf("\n-------------------\t-------------------\n");
+    printf("CIADDR");
+    printf("\t\t\t| %16X |", tempDHCP_Packet->ciaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("YIADDR");
+    printf("\t\t\t| %16X |", tempDHCP_Packet->yiaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("SIADDR");
+    printf("\t\t\t| %16X |", tempDHCP_Packet->siaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("GIADDR");;
+    printf("\t\t\t| %16X |", tempDHCP_Packet->giaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("CHADDR");
+    printf("\t\t\t| %16X |", tempDHCP_Packet->chaddr);
+	printf("\n-------------------\t-------------------\n");
+    printf("Magic Cookie");
+    printf("\t\t| %16X |", tempDHCP_Packet->magicCookie);
+	printf("\n-------------------\t-------------------\n");
+    printf("Option");
+	printf("\t\t\t| %16X |", tempDHCP_Packet->options);
+	printf("\n-------------------\t-------------------\n");
 }
 
 void logIt(FILE *fp, char *string, int thread_ID){
